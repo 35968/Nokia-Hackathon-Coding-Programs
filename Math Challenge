@@ -1,0 +1,41 @@
+Math challenge ::::::>>>>>>>>Given an array of integers, the goal is to calculate the sum of absolute values of the integers,
+with some specific rules based on whether the array contains both positive and negative numbers.
+
+#include<bits/stdc++.h>
+using namespace std;
+long long solve (int n, vector<int> a) {
+    long long sum = 0;
+    int min_abs = INT_MAX;
+    bool has_positive = false, has_negative = false;
+
+    for (int num : a) {
+        sum += abs(num);
+        min_abs = min(min_abs, abs(num));
+
+        if(num > 0) has_positive = true;
+        if (num < 0) has_negative = true;
+    }
+
+    if(has_positive && has_negative) {
+        return sum;
+    }
+
+    return sum - 2 * min_abs;
+}
+
+int main() {
+
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for(int i_a = 0; i_a < n; i_a++)
+    {
+    	cin >> a[i_a];
+    }
+
+    long long out_;
+    out_ = solve(n, a);
+    cout << out_;
+}
