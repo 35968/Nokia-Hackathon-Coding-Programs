@@ -1,0 +1,101 @@
+Ronin::::::>>>>>>> The above code solves a problem related to a tree structure and queries on paths within that tree. Specifically, the problem involves navigating a tree where each edge has a "power" associated with it. 
+Given a node and a certain health value (H), the task is to find the highest node that can be reached from the starting node without the health falling below a certain threshold when traversing the edges.
+
+
+#include<bits/stdc++.h>
+using namespace std;
+
+const int MAXN = 100005;
+
+vector<vector<pair<int, int>>> adj;
+vector<int> parent, edgepower;
+
+    void dfs(int root) {
+        stack<pair<int, pair<int, int>>> st;
+        st.push({root, {0, 0}});
+
+        while(!st.empty()) {
+            auto [node, parData] = st.top();
+            st.pop();
+            int par = parData.first;
+            int power = parData.second;
+
+            parent[node] = par;
+            edgepower[node] = power;
+
+            for (auto &[child, p] : adj[node]) {
+                if (child == par) continue;
+                st.push({child, {node, p}});
+            }
+        }
+    }  
+ 
+ vector<int> solve(int n, vector<vector<int>> &edges, int q, vector<vector<long long>> &queries) {
+    adj.clear();
+    adj.resize(n+1);
+    parent.assign(n+1, 0);
+    edgepower.assign(n+1, 0);
+
+    for (int i=0; i<n-1; i++) {
+        int u = edges[i][0], v = edges[i][1], p = edges[i][2];
+        adj[u].emplace_back(v, p);
+        adj[v].emplace_back(u, p);
+    }
+
+    dfs(1);
+
+    vector<int> result;
+    for (int i=0; i<q; i++) {
+        int u = queries[i][0];
+        long long H = queries[i][1];
+
+        int currentNode = u;
+        int highestNode = u;
+
+        while (currentNode != 1) {
+            int p = edgepower[currentNode];
+            if (H < p) break;
+            H -= p;
+            highestNode = parent[currentNode];
+            currentNode = parent[currentNode];
+        }
+
+        result.push_back(highestNode);
+    }
+
+    return result;   
+}
+
+int main() {
+
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    int n;
+    cin >> n;
+    vector<vector<int> > edges(n-1, vector<int>(3));
+    for(int i_edges = 0; i_edges < n-1; i_edges++)
+    {
+    	for(int j_edges = 0; j_edges < 3; j_edges++)
+    	{
+    		cin >> edges[i_edges][j_edges];
+    	}
+    }
+    int q;
+    cin >> q;
+    vector<vector<long long> > queries(q, vector<long long>(2));
+    for(int i_queries = 0; i_queries < q; i_queries++)
+    {
+    	for(int j_queries = 0; j_queries < 2; j_queries++)
+    	{
+    		cin >> queries[i_queries][j_queries];
+    	}
+    }
+
+    vector<int> out_;
+    out_ = solve(n, edges, q, queries);
+    cout << out_[0];
+    for(int i_out_ = 1; i_out_ < out_.size(); i_out_++)
+    {
+    	cout << " " << out_[i_out_];
+    }
+}
