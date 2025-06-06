@@ -1,0 +1,73 @@
+Alice in Foodland :::::: >>>>>>>> The code you provided is solving a variation of the Maximum Sum Increasing Subsequence (MSIS),
+problem using Fenwick Tree (Binary Indexed Tree) and coordinate compression.
+
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+class FenwickTree {
+    vector<ll> bit;
+    int size;
+public:
+    FenwickTree(int n) {
+        size = n;
+        bit.assign(n + 1, 0);
+    }
+
+    void update(int idx, ll val) {
+        while (idx <= size) {
+            bit[idx] = max(bit[idx], val);
+            idx += idx & -idx;
+        }
+    }
+
+    ll query(int idx) {
+        ll max_val = 0;
+        while (idx > 0) {
+            max_val = max(max_val, bit[idx]);
+            idx -= idx & -idx;
+        }
+        return max_val;
+    }
+};
+
+ll solve(int n, vector<int> nums) {
+    vector<int> sorted_nums = nums;
+    sort(sorted_nums.begin(), sorted_nums.end());
+    sorted_nums.erase(unique(sorted_nums.begin(), sorted_nums.end()), sorted_nums.end());
+
+    unordered_map<int, int> compress;
+    for (int i = 0; i < sorted_nums.size(); i++) {
+        compress[sorted_nums[i]] = i + 1;  
+    }
+
+    FenwickTree bit(sorted_nums.size());
+    ll max_sum = 0;
+
+    for (int num : nums) {
+        int idx = compress[num];
+        ll best_prev = bit.query(idx - 1);
+        ll curr_sum = best_prev + num;
+        bit.update(idx, curr_sum);
+        max_sum = max(max_sum, curr_sum);
+    }
+
+    return max_sum;
+    
+}
+
+int main() {
+
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    int n;
+    cin >> n;
+    vector<int> nums(n);
+    for(int i_nums = 0; i_nums < n; i_nums++)
+    {
+    	cin >> nums[i_nums];
+    }
+
+    long long out_;
+    out_ = solve(n, nums);
+    cout << out_;
+} 
