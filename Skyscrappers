@@ -1,0 +1,80 @@
+skyscrapers ::::::>>>>>>>>  Imagine a row of skyscrapers placed at specific positions (denoted by an array A), with each skyscraper having a height.
+The goal is to keep track of the longest segment of unoccupied space between the skyscrapers as they are added one by one at the positions given in A???
+
+#include<bits/stdc++.h>
+using namespace std;
+vector<int> solve (int N, int K, int Q, vector<int> A, vector<int> Queries) {
+    set<int> occupied;
+    map<int, int> segments;
+    vector<int> longestsegment(N);
+    
+    occupied.insert(0);
+    occupied.insert(K);
+    segments[K]= 1;
+
+    int maxLen= K;
+
+    for (int i = 0; i < N; i++) {
+        int pos = A[i];
+        auto it = occupied.lower_bound(pos);
+        int right = *it;
+        --it;
+        int left = *it;
+
+        int oldsegment = right - left;
+        segments[oldsegment]--;
+
+        if (segments[oldsegment] ==0) {
+            segments.erase(oldsegment);
+        }
+
+        int newLeftsegment = pos - left;
+        int newRightsegment = right - pos;
+
+        segments[newLeftsegment]++;
+        segments[newRightsegment]++;
+
+        maxLen = prev(segments.end())->first;
+        longestsegment[i] = maxLen;
+        occupied.insert(pos);
+    } 
+
+    vector<int> result;
+    for (int q : Queries) {
+        result.push_back(longestsegment[q - 1]);
+    }
+
+    return result;
+}
+
+int main() {
+
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    vector<string> custom_input_1(3);
+    for(int i_custom_input_1 = 0; i_custom_input_1 < 3; i_custom_input_1++)
+    {
+    	cin >> custom_input_1[i_custom_input_1];
+    }
+    int N = stoi(custom_input_1[0]);
+    int K = stoi(custom_input_1[1]);
+    int Q = stoi(custom_input_1[2]);
+    vector<int> A(N);
+    for(int i_A = 0; i_A < N; i_A++)
+    {
+    	cin >> A[i_A];
+    }
+    vector<int> Queries(Q);
+    for(int i_Queries = 0; i_Queries < Q; i_Queries++)
+    {
+    	cin >> Queries[i_Queries];
+    }
+
+    vector<int> out_;
+    out_ = solve(N, K, Q, A, Queries);
+    cout << out_[0];
+    for(int i_out_ = 1; i_out_ < out_.size(); i_out_++)
+    {
+    	cout << " " << out_[i_out_];
+    }
+}
