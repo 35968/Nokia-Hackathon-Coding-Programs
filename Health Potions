@@ -1,0 +1,40 @@
+Health potions ::::::>>>>>>> In a game-like scenario, the player has to choose health potions in such a way that the player's health is maximized. There are a sequence of health potions, each having a value.
+ The player can choose one or two consecutive potions at a time, and the goal is to maximize the total value of the potions selected, following the given rules.
+
+#include<bits/stdc++.h>
+using namespace std;
+int solve (int N, vector<int> Potions) {
+    if (N == 0) return 0;
+    vector<int> prefixSum(N + 1, 0);
+    for (int i = N - 1; i >= 0; --i) {
+        prefixSum[i] = Potions[i] + prefixSum[i + 1];
+    }
+    vector<int> dp(N + 2, 0);
+
+    for (int i = N-1; i >= 0; --i) {
+        int option1 = Potions[i] + (prefixSum[i + 1] -dp[i + 1]);
+        int option2 = (i+1<N) ? (Potions[i] + Potions[i+1] + (prefixSum[i+2] - dp[i+2])) :
+INT_MIN;
+
+        dp[i] = max(option1, option2);
+    }
+
+    return dp[0];
+}
+
+int main() {
+
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    int N;
+    cin >> N;
+    vector<int> Potions(N);
+    for(int i_Potions = 0; i_Potions < N; i_Potions++)
+    {
+    	cin >> Potions[i_Potions];
+    }
+
+    int out_;
+    out_ = solve(N, Potions);
+    cout << out_;
+}
